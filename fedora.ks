@@ -12,7 +12,7 @@ lang en_AU.UTF-8
 firstboot --enable
 
 network --device=enp1s0 --onboot=on --activate
-network --bootproto=static --ip=192.168.123.2 --netmask=255.255.255.0 --gateway=192.168.123.2 --nameserver=192.168.123.1
+network --bootproto=static --ip=192.168.123.2 --netmask=255.255.255.0 --gateway=192.168.123.1 --nameserver=192.168.123.1
 network --hostname=fedora-test.lan
 
 # Generated using Blivet version 3.9.1
