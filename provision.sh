@@ -12,15 +12,15 @@ if ! $VIRSH pool-info iso; then
 fi
 
 # Populate pool with ISO files as necessary
-ISO_NAME="Fedora-Server-dvd-x86_64-40-1.14"
-if ! $VIRSH vol-info --pool iso --vol "${ISO_NAME}.iso"; then
-  if [ ! -f "${ISO_NAME}.iso" ]; then
-    wget "https://download.fedoraproject.org/pub/fedora/linux/releases/40/Server/x86_64/iso/${ISO_NAME}.iso" -O "${ISO_NAME}.iso"
+FEDORA_ISO="Fedora-Server-dvd-x86_64-40-1.14.iso"
+if ! $VIRSH vol-info --pool iso --vol "${FEDORA_ISO}"; then
+  if [ ! -f "${FEDORA_ISO}" ]; then
+    wget "https://download.fedoraproject.org/pub/fedora/linux/releases/40/Server/x86_64/iso/${FEDORA_ISO}" -O "${FEDORA_ISO}"
   fi
-  size=$(stat -Lc%s "${ISO_NAME}.iso")
+  size=$(stat -Lc%s "${FEDORA_ISO}")
   $VIRSH vol-create --pool iso --file /dev/stdin <<EOF
 <volume>
-  <name>${ISO_NAME}.iso</name>
+  <name>${FEDORA_ISO}</name>
   <capacity>${size}</capacity>
   <target>
     <format type='raw'/>
@@ -32,21 +32,44 @@ if ! $VIRSH vol-info --pool iso --vol "${ISO_NAME}.iso"; then
   </target>
 </volume>
 EOF
-  $VIRSH vol-upload --pool iso "${ISO_NAME}.iso" "${ISO_NAME}.iso"
+  $VIRSH vol-upload --pool iso "${FEDORA_ISO}" "${FEDORA_ISO}"
+fi
+
+UBUNTU_ISO="ubuntu-24.04-desktop-amd64.iso"
+if ! $VIRSH vol-info --pool iso --vol "${UBUNTU_ISO}"; then
+  if [ ! -f "${UBUNTU_ISO}" ]; then
+    wget "https://mirror.aarnet.edu.au/pub/ubuntu/releases/24.04/${UBUNTU_ISO}" -O "${UBUNTU_ISO}"
+  fi
+  size=$(stat -Lc%s "${UBUNTU_ISO}")
+  $VIRSH vol-create --pool iso --file /dev/stdin <<EOF
+<volume>
+  <name>${UBUNTU_ISO}</name>
+  <capacity>${size}</capacity>
+  <target>
+    <format type='raw'/>
+    <permissions>
+      <mode>0644</mode>
+      <owner>0</owner>
+      <group>0</group>
+    </permissions>
+  </target>
+</volume>
+EOF
+  $VIRSH vol-upload --pool iso "${UBUNTU_ISO}" "${UBUNTU_ISO}"
 fi
 
 virt-install \
-  --name=fedora-test \
+  --name=ipa.corp.lan \
   --connect qemu:///system \
   --os-variant fedora40 \
   --vcpus 4 \
   --graphics none \
-  --location /var/lib/libvirt/iso/${ISO_NAME}.iso \
+  --location /var/lib/libvirt/iso/${FEDORA_ISO} \
   --memory 4096 \
   --disk size=20,bus=virtio,format=qcow2 \
   --network bridge=virbr0,model=virtio \
-  --initrd-inject=fedora.ks \
+  --initrd-inject=ipa.ks \
   --noautoconsole \
   --wait=-1 \
-  --extra-args "inst.ks=file:/fedora.ks console=ttyS0" 
+  --extra-args "inst.ks=file:/ipa.ks console=ttyS0" 
 
