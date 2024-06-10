@@ -73,3 +73,17 @@ virt-install \
   --wait=-1 \
   --extra-args "inst.ks=file:/ipa.ks console=ttyS0" 
 
+exit 0
+
+# Work in progress: Needs conversion to auto-install.
+virt-install \
+  --name=desktop.corp.lan \
+  --connect qemu:///system \
+  --os-variant ubuntu24.04 \
+  --vcpus 4 \
+  --location /var/lib/libvirt/iso/ubuntu-24.04-desktop-amd64.iso \
+  --memory 4096 \
+  --disk size=20,bus=virtio,format=qcow2 \
+  --network bridge=virbr0,model=virtio \
+  --wait=-1
+

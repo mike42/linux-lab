@@ -1,0 +1,129 @@
+autoinstall:
+  apt:
+    disable_components: []
+    fallback: offline-install
+    geoip: true
+    mirror-selection:
+      primary:
+      - country-mirror
+      - arches: &id001
+        - amd64
+        - i386
+        uri: http://archive.ubuntu.com/ubuntu/
+      - arches: &id002
+        - s390x
+        - arm64
+        - armhf
+        - powerpc
+        - ppc64el
+        - riscv64
+        uri: http://ports.ubuntu.com/ubuntu-ports
+    preserve_sources_list: false
+    security:
+    - arches: *id001
+      uri: http://security.ubuntu.com/ubuntu/
+    - arches: *id002
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  codecs:
+    install: true
+  drivers:
+    install: false
+  identity:
+    hostname: desktop.corp.lan
+    password: $6$vdyUhq5aVTDe0E1Q$UtwJzecKeciJm/91UbniKQyVBxCJ6bV2D.tXmxWO.SVX61sCv5y8wfGsKTzX5MwRA4eSQefJs2Q6KQOUR0tjr.
+    realname: tempadmin
+    username: tempadmin
+  kernel:
+    package: linux-generic-hwe-24.04
+  keyboard:
+    layout: us
+    toggle: null
+    variant: ''
+  locale: en_US.UTF-8
+  network:
+    ethernets:
+      enp1s0:
+        dhcp4: true
+    version: 2
+  oem:
+    install: auto
+  source:
+    id: ubuntu-desktop-minimal
+    search_drivers: false
+  ssh:
+    allow-pw: true
+    authorized-keys: []
+    install-server: false
+  storage:
+    config:
+    - ptable: gpt
+      path: /dev/vda
+      wipe: superblock-recursive
+      preserve: false
+      name: ''
+      grub_device: true
+      id: disk-vda
+      type: disk
+    - device: disk-vda
+      size: 1048576
+      flag: bios_grub
+      number: 1
+      preserve: false
+      offset: 1048576
+      path: /dev/vda1
+      id: partition-0
+      type: partition
+    - device: disk-vda
+      size: 1902116864
+      wipe: superblock
+      number: 2
+      preserve: false
+      offset: 2097152
+      path: /dev/vda2
+      id: partition-1
+      type: partition
+    - fstype: ext4
+      volume: partition-1
+      preserve: false
+      id: format-0
+      type: format
+    - device: disk-vda
+      size: 19569573888
+      wipe: superblock
+      number: 3
+      preserve: false
+      offset: 1904214016
+      path: /dev/vda3
+      id: partition-2
+      type: partition
+    - name: ubuntu-vg
+      devices:
+      - partition-2
+      preserve: false
+      id: lvm_volgroup-0
+      type: lvm_volgroup
+    - name: ubuntu-lv
+      volgroup: lvm_volgroup-0
+      size: 19566428160B
+      wipe: superblock
+      preserve: false
+      path: /dev/ubuntu-vg/ubuntu-lv
+      id: lvm_partition-0
+      type: lvm_partition
+    - fstype: ext4
+      volume: lvm_partition-0
+      preserve: false
+      id: format-1
+      type: format
+    - path: /
+      device: format-1
+      id: mount-1
+      type: mount
+    - path: /boot
+      device: format-0
+      id: mount-0
+      type: mount
+  timezone: Australia/Melbourne
+  updates: security
+  version: 1
+
